@@ -51,8 +51,12 @@ def register(request):
     else:
         return render(request,"ttsx/register.html")
 def user_center_info(request):
-    username=request.session.get("myname")
-    return render(request,"ttsx/user_center_info.html",{"username":username})
+    try:
+        username=request.session.get("myname")
+        return render(request,"ttsx/user_center_info.html",{"username":username})
+    except:
+        return render(request, "ttsx/user_center_info.html")
+
 def user_center_order(request):
     return render(request,"ttsx/user_center_order.html")
 def user_center_site(request):
@@ -65,17 +69,25 @@ def checkid(request):
     except User.DoesNotExist as e:
         return JsonResponse({"data":"可以注册","status":"success"})
 def checklogin(request):
-    userid=request.POST.get("username")
-    pwd=request.POST.get("pwd")
-    try:
-        user=User.objects.get(userId=userid)
-    except User.DoesNotExist as e:
-        return JsonResponse({"data":"该用户不存在","status":"error"})
-    password=user.passWord
-    if password!=pwd:
-        return JsonResponse({"data": "密码错误", "status": "error"})
+    print("*********")
+    if request.method=="POST":
+        print("*********1")
+        userid=request.POST.get("username")
+        pwd=request.POST.get("pwd")
+        try:
+            user=User.objects.get(userId=userid)
+            print("*********2")
+        except User.DoesNotExist as e:
+            return JsonResponse({"data":"该用户不存在","status":"error"})
+        password=user.passWord
+        if password!=pwd:
+            return JsonResponse({"data": "密码错误", "status": "error"})
+        else:
+            print("*********3")
+            return JsonResponse({"data": "登陆成功", "status": "success"})
     else:
-        return redirect("/user_center_info/")
+        print("*********4")
+        return redirect("/login/")
 
 
 

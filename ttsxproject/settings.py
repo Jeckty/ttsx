@@ -79,8 +79,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ttsx',
         'USER': 'root',
-        'PASSWORD': '941010',
-        'HOST': 'localhost',
+        'PASSWORD': '123456',
+        'HOST': '192.168.171.129',
         'POST':'3306',
     }
 }

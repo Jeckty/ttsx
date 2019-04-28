@@ -8,9 +8,11 @@ $(document).ready(function () {
         var pwd=$("#pass_input").val();
 
         $.post("/checklogin/",{"username":username,"pwd":pwd},function (data) {
-            if(data.status=="error"){
-
-            }
+                if(data.status=="success"){
+                    self.location="/user_center_info/"
+                }else{
+                     window.location.reload();
+                }
         })
     })
 })
