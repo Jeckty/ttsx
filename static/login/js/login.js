@@ -11,8 +11,21 @@ $(document).ready(function () {
                 if(data.status=="success"){
                     self.location="/user_center_info/"
                 }else{
-                     window.location.reload();
+                    if(data.data=="该用户不存在"){
+                         $(".user_error").show()
+                    }else if(data.data=="密码错误"){
+                         $(".pwd_error").show()
+                    }
+
                 }
         })
+    })
+
+    $(".pass_input").focus(function () {
+        $(".pwd_error").hide()
+    })
+
+     $(".name_input").focus(function () {
+        $(".user_error").hide()
     })
 })

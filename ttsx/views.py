@@ -69,24 +69,26 @@ def checkid(request):
     except User.DoesNotExist as e:
         return JsonResponse({"data":"可以注册","status":"success"})
 def checklogin(request):
-    print("*********")
     if request.method=="POST":
-        print("*********1")
         userid=request.POST.get("username")
         pwd=request.POST.get("pwd")
         try:
             user=User.objects.get(userId=userid)
-            print("*********2")
         except User.DoesNotExist as e:
             return JsonResponse({"data":"该用户不存在","status":"error"})
         password=user.passWord
         if password!=pwd:
             return JsonResponse({"data": "密码错误", "status": "error"})
         else:
-            print("*********3")
+            user=User.objects.get(userId=userid)
+            usertoken=str(time.time()+random.randrange(1,100000))
+            user.userToken=usertoken
+            user.save()
+            myname=user.userName
+            request.session["myname"]=myname
+            request.session["usertoken"]=usertoken
             return JsonResponse({"data": "登陆成功", "status": "success"})
     else:
-        print("*********4")
         return redirect("/login/")
 
 
