@@ -2,6 +2,9 @@ from django.shortcuts import render,HttpResponse,redirect
 from . models import FoodTypes,Goods,User
 from django.http import JsonResponse
 import time,random
+from django.contrib.auth import logout
+from django.core.paginator import Paginator
+
 
 # Create your views here.
 def login(request):
@@ -28,9 +31,16 @@ def index(request):
     for i in range(11):
         dic=[{"type":tpyeList[i],"goods":ll[i]}]
         allList.append(dic)
-    return render(request,"ttsx/index.html",{"typeList":allList})
-def list(request):
-    return render(request,"ttsx/list.html")
+    return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList})
+def list(request,typeid,page):
+    username=request.session.get("myname")
+    list=FoodTypes.objects.all()
+    typename=FoodTypes.objects.get(typeid=typeid)
+    foodlist=Goods.objects.filter(categoryid=typeid)
+    paginator = Paginator(foodlist, 15)
+    foods = paginator.page(page)
+
+    return render(request,"ttsx/list.html",{"username":username,"List":list,"typename":typename,"foodlist":foods})
 def place_order(request):
     return render(request,"ttsx/place_order.html")
 def register(request):
@@ -53,7 +63,10 @@ def register(request):
 def user_center_info(request):
     try:
         username=request.session.get("myname")
-        return render(request,"ttsx/user_center_info.html",{"username":username})
+        usertoken = request.session.get("usertoken")
+        user=User.objects.get(userToken=usertoken)
+        userid=user.userId
+        return render(request,"ttsx/user_center_info.html",{"username":username,"userid":user.userId,"phonenum":user.phoneNum,"useraddress":user.userAddress})
     except:
         return render(request, "ttsx/user_center_info.html")
 
@@ -90,6 +103,16 @@ def checklogin(request):
             return JsonResponse({"data": "登陆成功", "status": "success"})
     else:
         return redirect("/login/")
+
+def base(request):
+    username=request.session.get("myname")
+    return render(request,"ttsx/base.html",{"username":username})
+
+def quit(request):
+    logout(request)
+    return redirect("/login/")
+
+
 
 
 

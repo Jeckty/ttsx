@@ -1,39 +1,6 @@
+{% extends "ttsx/base.html" %}
 {% load static from staticfiles %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<title>天天生鲜-首页</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'base/css/reset.css'%}">
-	<link rel="stylesheet" type="text/css" href="{% static 'base/css/main.css'%}">
-	<script type="text/javascript" src="{% static 'base/js/jquery-1.12.4.min.js' %}"></script>
-	<script type="text/javascript" src="{% static 'base/js/jquery-ui.min.js'%}"></script>
-	<script type="text/javascript" src="{% static 'base/js/slide.js'%}"></script>
-</head>
-<body>
-	<div class="header_con">
-		<div class="header">
-			<div class="welcome fl">欢迎来到天天生鲜!</div>
-			<div class="fr">
-				<div class="login_info fl">
-					欢迎您：<em>张 山</em>
-				</div>
-				<div class="login_btn fl">
-					<a href="/login/">登录</a>
-					<span>|</span>
-					<a href="/register/">注册</a>
-				</div>
-				<div class="user_link fl">
-					<span>|</span>
-					<a href="/user_center_info/">用户中心</a>
-					<span>|</span>
-					<a href="/cart/">我的购物车</a>
-					<span>|</span>
-					<a href="/user_center_order/">我的订单</a>
-				</div>
-			</div>
-		</div>		
-	</div>
+{% block block_mn %}
 
 	<div class="search_bar clearfix">
 		<a href="index.html" class="logo fl"><img src="{% static 'base/img/logo.png' %}"></a>
@@ -62,18 +29,9 @@
 
 	<div class="center_con clearfix">
 		<ul class="subnav fl">
-			<li><a href="#model01" class="fruit">家装家纺</a></li>
-			<li><a href="#model02" class="seafood">内衣</a></li>
-			<li><a href="#model03" class="meet">食品生鲜</a></li>
-			<li><a href="#model04" class="egg">百货</a></li>
-			<li><a href="#model05" class="vegetables">美妆</a></li>
-			<li><a href="#model06" class="ice">手机数码</a></li>
-            <li><a href="#model02" class="seafood">母婴童装</a></li>
-			<li><a href="#model03" class="meet">女装</a></li>
-			<li><a href="#model04" class="egg">家电汽车</a></li>
-			<li><a href="#model05" class="vegetables">运动户外</a></li>
-			<li><a href="#model06" class="ice">男装</a></li>
-
+            {% for item in List %}
+                <li><a href="/list/{{ item.typeid }}/1/" id="{{ item.typeid }}">{{ item.typename }}</a></li>
+            {% endfor %}
 		</ul>
 		<div class="slide fl">
 			<ul class="slide_pics">
@@ -119,37 +77,6 @@
 		</div>
 	</div>
     {% endfor %}
+{% endblock block_mn %}
 
 
-	<div class="footer">
-		<div class="foot_link">
-			<a href="#">关于我们</a>
-			<span>|</span>
-			<a href="#">联系我们</a>
-			<span>|</span>
-			<a href="#">招聘人才</a>
-			<span>|</span>
-			<a href="#">友情链接</a>		
-		</div>
-		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
-		<p>电话：010-****888    京ICP备*******8号</p>
-	</div>
-	<script type="text/javascript" src="js/slideshow.js"></script>
-	<script type="text/javascript">
-		BCSlideshow('focuspic');
-		var oFruit = document.getElementById('fruit_more');
-		var oShownum = document.getElementById('show_count');
-
-		var hasorder = localStorage.getItem('order_finish');
-
-		if(hasorder)
-		{
-			oShownum.innerHTML = '2';
-		}
-
-		oFruit.onclick = function(){
-			window.location.href = 'list.html';
-		}
-	</script>
-</body>
-</html>

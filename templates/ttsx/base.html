@@ -1,0 +1,61 @@
+{% load static from staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'base/css/reset.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'base/css/main.css'%}">
+	<script type="text/javascript" src="{% static 'base/js/jquery-1.12.4.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'base/js/jquery-ui.min.js'%}"></script>
+	<script type="text/javascript" src="{% static 'base/js/slide.js'%}"></script>
+    {%block block_main%}
+    {%endblock block_main%}
+</head>
+<body>
+	<div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到天天生鲜!</div>
+			<div class="fr">
+				<div class="login_info fl">
+					欢迎您：<em>{{ username|default:"未登录"}}</em>
+                    <span>|</span>
+                    <a href="/quit/">退出登陆</a>
+                    <span>|</span>
+				</div>
+				<div class="login_btn fl">
+					<a href="/login/">登录</a>
+					<span>|</span>
+					<a href="/register/">注册</a>
+				</div>
+				<div class="user_link fl">
+					<span>|</span>
+					<a href="/user_center_info/">用户中心</a>
+					<span>|</span>
+					<a href="/cart/">我的购物车</a>
+					<span>|</span>
+					<a href="/user_center_order/">我的订单</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+    {%block block_mn%}
+    {%endblock block_mn%}
+	<div class="footer">
+		<div class="foot_link">
+			<a href="#">关于我们</a>
+			<span>|</span>
+			<a href="#">联系我们</a>
+			<span>|</span>
+			<a href="#">招聘人才</a>
+			<span>|</span>
+			<a href="#">友情链接</a>
+		</div>
+		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
+		<p>电话：010-****888    京ICP备*******8号</p>
+	</div>
+
+</body>
+</html>
