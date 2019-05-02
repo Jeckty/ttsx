@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'ttsxproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ttsx',
+        'NAME': 'ttsx2',
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': '192.168.171.129',

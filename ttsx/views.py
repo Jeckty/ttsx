@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,redirect
-from . models import FoodTypes,Goods,User
+from . models import FoodTypes,Goods,User,Cart
 from django.http import JsonResponse
 import time,random
 from django.contrib.auth import logout
@@ -10,7 +10,10 @@ from django.core.paginator import Paginator
 def login(request):
     return render(request,"ttsx/login.html")
 def cart(request):
-    return render(request,"ttsx/cart.html")
+    username = request.session.get("myname")
+    userid = request.session.get("myid")
+    cartlist = Cart.objects.filter(userAccount=userid)
+    return render(request,"ttsx/cart.html",{"username": username, "cartist": cartlist,"cartnum": len(cartlist)})
 def detail(request):
     return render(request,"ttsx/detail.html")
 def index(request):
@@ -34,13 +37,17 @@ def index(request):
     return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList})
 def list(request,typeid,page):
     username=request.session.get("myname")
+    userid = request.session.get("myid")
     list=FoodTypes.objects.all()
     typename=FoodTypes.objects.get(typeid=typeid)
     foodlist=Goods.objects.filter(categoryid=typeid)
     paginator = Paginator(foodlist, 15)
     foods = paginator.page(page)
-
-    return render(request,"ttsx/list.html",{"username":username,"List":list,"typename":typename,"foodlist":foods})
+    cart=Cart.objects.filter(userAccount=userid)
+    cartnum=0
+    for item in cart:
+        cartnum+=item.productnum
+    return render(request,"ttsx/list.html",{"username":username,"List":list,"typename":typename,"foodlist":foods,"cartnum":cartnum})
 def place_order(request):
     return render(request,"ttsx/place_order.html")
 def register(request):
@@ -55,6 +62,7 @@ def register(request):
         use=User.createUser(userId=userId,userName=userName,passWord=passWord,mailId=mailId,phoneNum=phoneNum,userAddress=userAddress,userToken=userToken)
         use.save()
         request.session["myname"]=userName
+        request.session["myid"] = userId
         request.session["usertoken"]=userToken
         return redirect("/user_center_info/")
 
@@ -99,6 +107,7 @@ def checklogin(request):
             user.save()
             myname=user.userName
             request.session["myname"]=myname
+            request.session["myid"] = userid
             request.session["usertoken"]=usertoken
             return JsonResponse({"data": "登陆成功", "status": "success"})
     else:
@@ -111,6 +120,37 @@ def base(request):
 def quit(request):
     logout(request)
     return redirect("/login/")
+
+def changecart(request,id):
+    token=request.session.get("usertoken")
+    pid=request.POST.get("pid")
+    print(id)
+    if  not token:
+        return JsonResponse({"data": "-1", "status": "error"})
+    userid=request.session.get("myid")
+    good=Goods.objects.get(productid=pid)
+    if id=="0":
+        try:
+            cart=Cart.objects.get(userAccount=userid,productid=pid)
+            cart.productnum+=1
+            cart.productprice=cart.productnum * good.price
+            cart.save()
+        except Cart.DoesNotExist as e:
+            c=Cart.createcart(userid, pid, 1, good.price,True, good.picUrl, good.shortName, False)
+            c.save()
+        return JsonResponse({"data": "1", "status": "success"})
+    if id=="1":
+        print("--------------")
+        ischose=request.POST.get("value")
+        if ischose=="false":
+            ischose="False"
+        if ischose=="true":
+            ischose="True"
+        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart.isChose=ischose
+        cart.save()
+        return JsonResponse({"data": "1", "status": "success"})
+
 
 
 

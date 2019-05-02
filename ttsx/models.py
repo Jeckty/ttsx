@@ -46,10 +46,10 @@ class User(models.Model):
         return u
 
 class Cart(models.Model):
-    userAccount = models.CharField(max_length=20)
-    productid = models.CharField(max_length=10)
+    userAccount = models.CharField(max_length=25)
+    productid = models.CharField(max_length=30)
     productnum = models.IntegerField()
-    productprice = models.CharField(max_length=10)
+    productprice = models.FloatField()
     isChose = models.BooleanField(default=True)
     productimg = models.CharField(max_length=150)
     productname = models.CharField(max_length=100)

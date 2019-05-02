@@ -18,6 +18,7 @@ urlpatterns = [
     re_path(r'^checklogin/$',views.checklogin,name="checklogin"),
     re_path(r'^base/$',views.base,name="base"),
     re_path(r'^quit/$',views.quit,name="quit"),
+    re_path(r'^changecart/(\d+)/$',views.changecart,name="changecart"),
 
 
 
