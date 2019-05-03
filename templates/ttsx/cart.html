@@ -36,13 +36,13 @@
 		<li class="col05">25.80元</li>
 		<li class="col06">
 			<div class="num_add">
-				<a href="javascript:;" class="add fl">+</a>
+				<a href="javascript:" ga="{{ item.productid }}" class="add fl">+</a>
 				<input type="text" class="num_show fl" value="{{ item.productnum }}">
-				<a href="javascript:;" class="minus fl">-</a>	
+				<a href="javascript:"  ga="{{ item.productid }}" class="minus fl">-</a>
 			</div>
 		</li>
-		<li class="col07">{{ item.productprice }}</li>
-		<li class="col08"><a href="javascript:;">删除</a></li>
+		<li class="col07" id="{{ item.productid }}p">{{ item.productprice }}</li>
+		<li class="col08" ><a href="javascript:" class="del" ga="{{ item.productid }}" id="{{ item.productid }}d">删除</a></li>
 	</ul>
     {% endfor %}
 
@@ -50,8 +50,8 @@
 	<ul class="settlements">
 		<li class="col01"><input class="ck02" type="checkbox" name=""></li>
 		<li class="col02" >全选</li>
-		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="totalprice">{{ totalprice }}</em><br >共计<b id="ischose">{{ chosenum }}</b>件商品</li>
+		<li class="col04"><a href="/place_order/">去结算</a></li>
 	</ul>
 
 

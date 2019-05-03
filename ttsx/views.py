@@ -13,7 +13,12 @@ def cart(request):
     username = request.session.get("myname")
     userid = request.session.get("myid")
     cartlist = Cart.objects.filter(userAccount=userid)
-    return render(request,"ttsx/cart.html",{"username": username, "cartist": cartlist,"cartnum": len(cartlist)})
+    chose=Cart.objects.filter(userAccount=userid,isChose=True)
+    chosenum=len(chose)
+    totalPrice=0
+    for item in chose:
+        totalPrice+=item.productprice
+    return render(request,"ttsx/cart.html",{"username": username, "cartist": cartlist,"cartnum": len(cartlist),"chosenum":chosenum,"totalprice":totalPrice})
 def detail(request):
     return render(request,"ttsx/detail.html")
 def index(request):
@@ -124,7 +129,7 @@ def quit(request):
 def changecart(request,id):
     token=request.session.get("usertoken")
     pid=request.POST.get("pid")
-    print(id)
+    good = Goods.objects.get(productid=pid)
     if  not token:
         return JsonResponse({"data": "-1", "status": "error"})
     userid=request.session.get("myid")
@@ -140,7 +145,6 @@ def changecart(request,id):
             c.save()
         return JsonResponse({"data": "1", "status": "success"})
     if id=="1":
-        print("--------------")
         ischose=request.POST.get("value")
         if ischose=="false":
             ischose="False"
@@ -149,7 +153,47 @@ def changecart(request,id):
         cart = Cart.objects.get(userAccount=userid, productid=pid)
         cart.isChose=ischose
         cart.save()
-        return JsonResponse({"data": "1", "status": "success"})
+        chose = Cart.objects.filter(userAccount=userid, isChose=True)
+        chosenum = len(chose)
+        totalPrice = 0
+        for item in chose:
+            totalPrice += item.productprice
+        return JsonResponse({"data": "1", "status": "success","chosenum":chosenum,"totalprice":totalPrice})
+    # 增加购物车
+    if id=="2":
+        good=Goods.objects.get(productid=pid)
+        goodsort=good.storenums
+        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        if goodsort>cart.productnum:
+            cart.productnum+=1
+            cart.productprice=cart.productnum * good.price
+            cart.save()
+            chose = Cart.objects.filter(userAccount=userid, isChose=True)
+            totalPrice = 0
+            for item in chose:
+                totalPrice += item.productprice
+            return JsonResponse({"data": cart.productnum, "status": "success","price":cart.productprice,"totalprice":totalPrice})
+        else:
+            return JsonResponse({"status": "error"})
+    # 减少购物车
+    if id=="3":
+        goodsort=good.storenums
+        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        if cart.productnum>0:
+            cart.productnum-=1
+            cart.productprice = cart.productnum * good.price
+            cart.save()
+            chose = Cart.objects.filter(userAccount=userid, isChose=True)
+            totalPrice = 0
+            for item in chose:
+                totalPrice += item.productprice
+            return JsonResponse({"data": cart.productnum, "status": "success","price":cart.productprice,"totalprice":totalPrice})
+        else:
+            return JsonResponse({"status": "error"})
+    if id=="4":
+        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart.delete()
+        return JsonResponse({"status":"success"})
 
 
 
