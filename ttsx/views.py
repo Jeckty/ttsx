@@ -22,6 +22,7 @@ def cart(request):
 def detail(request):
     return render(request,"ttsx/detail.html")
 def index(request):
+    username = request.session.get("myname")
     tpyeList=FoodTypes.objects.all()
     neiyiList=Goods.objects.filter(categoryid="4000")[0:4]
     jiaList=Goods.objects.filter(categoryid="80000")[0:4]
@@ -39,7 +40,7 @@ def index(request):
     for i in range(11):
         dic=[{"type":tpyeList[i],"goods":ll[i]}]
         allList.append(dic)
-    return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList})
+    return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList,"username": username})
 def list(request,typeid,page):
     username=request.session.get("myname")
     userid = request.session.get("myid")
@@ -54,7 +55,10 @@ def list(request,typeid,page):
         cartnum+=item.productnum
     return render(request,"ttsx/list.html",{"username":username,"List":list,"typename":typename,"foodlist":foods,"cartnum":cartnum})
 def place_order(request):
-    return render(request,"ttsx/place_order.html")
+
+    username = request.session.get("myname")
+    userid = request.session.get("myid")
+    return render(request,"ttsx/place_order.html",{"username": username})
 def register(request):
     if request.method=="POST":
         userId=request.POST.get("user_id")
