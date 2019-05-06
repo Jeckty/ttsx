@@ -53,12 +53,12 @@ class Cart(models.Model):
     isChose = models.BooleanField(default=True)
     productimg = models.CharField(max_length=150)
     productname = models.CharField(max_length=100)
-    orderid = models.CharField(max_length=20, default="0")
+    orderid = models.ForeignKey("Order",on_delete=models.CASCADE)
     isDelete = models.BooleanField(default=False)
     @classmethod
-    def createcart(cls, userAccount, productid, productnum, productprice, isChose, productimg, productname, isDelete):
+    def createcart(cls, userAccount, productid, productnum, productprice, isChose, productimg, productname, isDelete,orderid):
         c = cls(userAccount=userAccount, productid=productid, productnum=productnum, productprice=productprice,
-                isChose=isChose, productimg=productimg, productname=productname, isDelete=isDelete)
+                isChose=isChose, productimg=productimg, productname=productname, isDelete=isDelete,orderid=orderid)
         return c
 
 class Address(models.Model):

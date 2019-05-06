@@ -3,6 +3,7 @@ $(document).ready(function () {
     for(var i=0;i<add_goods.length;i++){
         add_goods[i].onclick=function () {
             pid=this.getAttribute("ga");
+            $.ajaxSetup({async:false});
             $.post("/changecart/0/",{"pid":pid},function (data) {
                 if(data.data=="-1"){
                     window.location.href = "http://127.0.0.1:8000/login/"

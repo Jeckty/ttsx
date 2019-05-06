@@ -5,7 +5,7 @@
 {% endblock block_main %}
 {% block block_mn %}
 	<div class="search_bar clearfix">
-		<a href="index.html" class="logo fl"><img src="{% static 'base/img/logo.png' %}"></a>
+		<a href="/index/" class="logo fl"><img src="{% static 'base/img/logo.png' %}"></a>
 		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;用户中心</div>
 		<div class="search_con fr">
 			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
@@ -24,64 +24,34 @@
 		</div>
 		<div class="right_content clearfix">
 				<h3 class="common_title2">全部订单</h3>
+            {% for i in orderList %}
 				<ul class="order_list_th w978 clearfix">
-					<li class="col01">2016-8-21 17:36:24</li>
-					<li class="col02">订单号：56872934</li>
-					<li class="col02 stress">未支付</li>		
+					<li class="col01">2019-{{ i.item.orderId|slice:"0:1" }}-{{ i.item.orderId|slice:"1:3" }} {{ i.item.orderId|slice:"3:5" }}:{{ i.item.orderId|slice:"5:7" }}:{{ i.item.orderId|slice:"7:9" }}</li>
+					<li class="col02">订单号：{{ i.item.orderId }}</li>
+					<li class="col02 stress">{{ i.item.paymentStatus }}</li>
 				</ul>
 
 				<table class="order_list_table w980">
 					<tbody>
 						<tr>
 							<td width="55%">
+                                {% for item in i.order %}
 								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
+									<li class="col01"><img src="{{ item.productimg }}"></li>
+									<li class="col02">{{ item.productname|slice:"0:6" }}<em>11.80元/500g</em></li>
+									<li class="col03">{{ item.productnum }}</li>
+									<li class="col04">{{ item.productprice }}元</li>
 								</ul>
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
+                                {% endfor %}
 							</td>
-							<td width="15%">33.60元</td>
-							<td width="15%">待付款</td>
+							<td width="15%">555元</td>
+							<td width="15%">{{ i.item.paymentStatus  }}</td>
 							<td width="15%"><a href="#" class="oper_btn">去付款</a></td>
 						</tr>
 					</tbody>
 				</table>
-				
-				<ul class="order_list_th w978 clearfix">
-					<li class="col01">2016-8-21 17:36:24</li>
-					<li class="col02">订单号：56872934</li>
-					<li class="col02 stress">已支付</li>			
-				</ul>
-				<table class="order_list_table w980">
-					<tbody>
-						<tr>
-							<td width="55%">
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-							</td>
-							<td width="15%">33.60元</td>
-							<td width="15%">已付款</td>
-							<td width="15%"><a href="#" class="oper_btn">查看物流</a></td>
-						</tr>
-					</tbody>
-				</table>
+
+            {% endfor %}
 
 				<div class="pagenation">
 					<a href="#"><上一页</a>
