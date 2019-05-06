@@ -24,6 +24,7 @@ def cart(request):
 def detail(request):
     return render(request,"ttsx/detail.html")
 def index(request):
+    userid = request.session.get("myid")
     username = request.session.get("myname")
     tpyeList=FoodTypes.objects.all()
     neiyiList=Goods.objects.filter(categoryid="4000")[0:4]
@@ -42,7 +43,11 @@ def index(request):
     for i in range(11):
         dic=[{"type":tpyeList[i],"goods":ll[i]}]
         allList.append(dic)
-    return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList,"username": username})
+    cart = Cart.objects.filter(userAccount=userid, orderid=1)
+    cartnum = 0
+    for item in cart:
+        cartnum += item.productnum
+    return render(request,"ttsx/index.html",{"typeList":allList,"List":tpyeList,"username": username,"cartnum":cartnum})
 def list(request,typeid,page):
     username=request.session.get("myname")
     userid = request.session.get("myid")
@@ -64,6 +69,7 @@ def place_order(request):
     totalPrice = 0
     for item in order:
         totalPrice += item.productprice
+    totalPrice=round(totalPrice,2)
     return render(request,"ttsx/place_order.html",{"username": username,"address":address,"order":order,"totalprice":totalPrice,"finnallyprice":totalPrice+10})
 def register(request):
     if request.method=="POST":
@@ -105,7 +111,10 @@ def user_center_order(request):
 def user_center_site(request):
     username = request.session.get("myname")
     userid = request.session.get("myid")
-    address = Address.objects.get(userId=userid,isUsed=True)
+    try:
+        address = Address.objects.get(userId=userid,isUsed=True)
+    except Address.DoesNotExist as e:
+        return render(request, "ttsx/user_center_site.html", {"username": username})
     return render(request,"ttsx/user_center_site.html",{"username":username,"address":address})
 def checkid(request):
     userid = request.POST.get("uesrid")
