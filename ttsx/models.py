@@ -61,4 +61,34 @@ class Cart(models.Model):
                 isChose=isChose, productimg=productimg, productname=productname, isDelete=isDelete)
         return c
 
+class Address(models.Model):
+    userId=models.CharField(max_length=25)
+    receiver=models.CharField(max_length=20)
+    detailAddress=models.CharField(max_length=400)
+    phoneNum=models.CharField(max_length=20)
+    postalCode=models.CharField(max_length=10)
+    isUsed=models.BooleanField(default=False)
+    isDelete=models.BooleanField(default=False)
+    @classmethod
+    def createAddress(cls,userid,receiver,phonenum,detailaddress,postalcode,isused,isdelete):
+        a=cls(userId=userid,receiver=receiver,phoneNum=phonenum,detailAddress=detailaddress,postalCode=postalcode,isUsed=isused,isDelete=isdelete)
+        return a
+
+class Order(models.Model):
+    pass
+    userId=models.CharField(max_length=20)
+    orderId=models.CharField(max_length=25)
+    payWay=models.CharField(max_length=20)
+    paymentStatus=models.BooleanField()
+    trackNum=models.CharField(max_length=20)
+    trackUrl=models.CharField(max_length=50)
+    @classmethod
+    def createOrder(cls,userId,orderId,payWay,paymentStatus,trackNum,trackUrl):
+        o=cls(userId=userId,orderId=orderId,payWay=payWay,paymentStatus=paymentStatus,trackNum=trackNum,trackUrl=trackUrl)
+        return o
+
+
+
+
+
 

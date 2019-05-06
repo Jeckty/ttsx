@@ -433,7 +433,7 @@ html,body{height:100%}
 
 .goods_list_td .col02{text-align:right}
 .goods_list_td .col02 img{width:63px;height:63px;border:1px solid #ddd;display:block;margin:7px 0;float:right;}
-.goods_list_td .col03{text-align:left;text-indent:20px}
+.goods_list_td .col03{text-align:left;text-indent:20px;}
 
 
 .settle_con{margin:10px}

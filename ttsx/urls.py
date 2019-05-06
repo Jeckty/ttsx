@@ -19,6 +19,8 @@ urlpatterns = [
     re_path(r'^base/$',views.base,name="base"),
     re_path(r'^quit/$',views.quit,name="quit"),
     re_path(r'^changecart/(\d+)/$',views.changecart,name="changecart"),
+    re_path(r'^changeaddress/(\d+)/$',views.changeaddress,name="changeaddress"),
+    re_path(r'^makeorder/$',views.makeorder,name="makeorder"),
 
 
 

@@ -1,9 +1,10 @@
 from django.shortcuts import render,HttpResponse,redirect
-from . models import FoodTypes,Goods,User,Cart
+from . models import FoodTypes,Goods,User,Cart,Address,Order
 from django.http import JsonResponse
-import time,random
+import time,random,datetime
 from django.contrib.auth import logout
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 # Create your views here.
@@ -12,12 +13,13 @@ def login(request):
 def cart(request):
     username = request.session.get("myname")
     userid = request.session.get("myid")
-    cartlist = Cart.objects.filter(userAccount=userid)
-    chose=Cart.objects.filter(userAccount=userid,isChose=True)
+    cartlist = Cart.objects.filter(userAccount=userid,orderid="0")
+    chose=Cart.objects.filter(userAccount=userid,isChose=True,orderid="0")
     chosenum=len(chose)
     totalPrice=0
     for item in chose:
         totalPrice+=item.productprice
+    totalPrice = round(totalPrice, 2)
     return render(request,"ttsx/cart.html",{"username": username, "cartist": cartlist,"cartnum": len(cartlist),"chosenum":chosenum,"totalprice":totalPrice})
 def detail(request):
     return render(request,"ttsx/detail.html")
@@ -49,16 +51,20 @@ def list(request,typeid,page):
     foodlist=Goods.objects.filter(categoryid=typeid)
     paginator = Paginator(foodlist, 15)
     foods = paginator.page(page)
-    cart=Cart.objects.filter(userAccount=userid)
+    cart=Cart.objects.filter(userAccount=userid,orderid="0")
     cartnum=0
     for item in cart:
         cartnum+=item.productnum
     return render(request,"ttsx/list.html",{"username":username,"List":list,"typename":typename,"foodlist":foods,"cartnum":cartnum})
 def place_order(request):
-
     username = request.session.get("myname")
     userid = request.session.get("myid")
-    return render(request,"ttsx/place_order.html",{"username": username})
+    address=Address.objects.filter(userId=userid)
+    order = Cart.objects.filter(userAccount=userid,productnum__gt=0, isChose=True,orderid="0")
+    totalPrice = 0
+    for item in order:
+        totalPrice += item.productprice
+    return render(request,"ttsx/place_order.html",{"username": username,"address":address,"order":order,"totalprice":totalPrice,"finnallyprice":totalPrice+10})
 def register(request):
     if request.method=="POST":
         userId=request.POST.get("user_id")
@@ -88,9 +94,15 @@ def user_center_info(request):
         return render(request, "ttsx/user_center_info.html")
 
 def user_center_order(request):
-    return render(request,"ttsx/user_center_order.html")
+    username = request.session.get("myname")
+    userid = request.session.get("myid")
+    order=Order.objects.filter(userId=userid)
+    return render(request,"ttsx/user_center_order.html",{"username":username,"order":order})
 def user_center_site(request):
-    return render(request,"ttsx/user_center_site.html")
+    username = request.session.get("myname")
+    userid = request.session.get("myid")
+    address = Address.objects.get(userId=userid,isUsed=True)
+    return render(request,"ttsx/user_center_site.html",{"username":username,"address":address})
 def checkid(request):
     userid = request.POST.get("uesrid")
     try:
@@ -139,8 +151,11 @@ def changecart(request,id):
     userid=request.session.get("myid")
     good=Goods.objects.get(productid=pid)
     if id=="0":
+        if good.storenums==0:
+            print("********")
+            return JsonResponse({"data":"0"})
         try:
-            cart=Cart.objects.get(userAccount=userid,productid=pid)
+            cart=Cart.objects.get(userAccount=userid,productid=pid,orderid="0")
             cart.productnum+=1
             cart.productprice=cart.productnum * good.price
             cart.save()
@@ -154,50 +169,95 @@ def changecart(request,id):
             ischose="False"
         if ischose=="true":
             ischose="True"
-        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart = Cart.objects.get(userAccount=userid, productid=pid,orderid="0")
         cart.isChose=ischose
         cart.save()
-        chose = Cart.objects.filter(userAccount=userid, isChose=True)
+        chose = Cart.objects.filter(userAccount=userid, isChose=True,orderid="0")
         chosenum = len(chose)
         totalPrice = 0
         for item in chose:
             totalPrice += item.productprice
+        totalPrice = round(totalPrice, 2)
         return JsonResponse({"data": "1", "status": "success","chosenum":chosenum,"totalprice":totalPrice})
     # 增加购物车
     if id=="2":
         good=Goods.objects.get(productid=pid)
+        print(pid)
         goodsort=good.storenums
-        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart = Cart.objects.get(userAccount=userid, productid=pid,orderid="0")
         if goodsort>cart.productnum:
             cart.productnum+=1
-            cart.productprice=cart.productnum * good.price
+            cart.productprice=round(cart.productnum * good.price,2)
             cart.save()
-            chose = Cart.objects.filter(userAccount=userid, isChose=True)
+            chose = Cart.objects.filter(userAccount=userid, isChose=True,orderid="0")
             totalPrice = 0
             for item in chose:
                 totalPrice += item.productprice
+            totalPrice=round(totalPrice,2)
             return JsonResponse({"data": cart.productnum, "status": "success","price":cart.productprice,"totalprice":totalPrice})
         else:
             return JsonResponse({"status": "error"})
     # 减少购物车
     if id=="3":
         goodsort=good.storenums
-        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart = Cart.objects.get(userAccount=userid, productid=pid,orderid="0")
         if cart.productnum>0:
             cart.productnum-=1
-            cart.productprice = cart.productnum * good.price
+            cart.productprice = round(cart.productnum * good.price ,2)
             cart.save()
-            chose = Cart.objects.filter(userAccount=userid, isChose=True)
+            chose = Cart.objects.filter(userAccount=userid, isChose=True,orderid="0")
             totalPrice = 0
             for item in chose:
                 totalPrice += item.productprice
+                totalPrice = round(totalPrice, 2)
             return JsonResponse({"data": cart.productnum, "status": "success","price":cart.productprice,"totalprice":totalPrice})
         else:
             return JsonResponse({"status": "error"})
     if id=="4":
-        cart = Cart.objects.get(userAccount=userid, productid=pid)
+        cart = Cart.objects.get(userAccount=userid, productid=pid,orderid="0")
         cart.delete()
         return JsonResponse({"status":"success"})
+
+def changeaddress(request,id):
+    if id=="1":
+        if request.method=="POST":
+            userId=request.session.get("myid")
+            receiver=request.POST.get("receiver")
+            detailAddress=request.POST.get("detailAddress")
+            phoneNum=request.POST.get("phoneNum")
+            postalCode=request.POST.get("postalCode")
+            a=Address.createAddress(userId,receiver,phoneNum,detailAddress,postalCode,False,False)
+            a.save()
+            return redirect("/place_order/")
+        else:
+            return render(request,"ttsx/user_center_site.html")
+    if id=="2":
+        addid=request.POST.get("addid")
+        print(addid)
+        ad=Address.objects.all()
+        for item in ad:
+            if item.id==int(addid):
+                item.isUsed=True
+            else:
+                item.isUsed=False
+            item.save()
+        return JsonResponse({"status":"success"})
+
+def makeorder(request):
+    if request.method=="POST":
+        payway=request.POST.get("payway")
+        userId=request.session.get("myid")
+        now_time = datetime.datetime.now() + datetime.timedelta(hours=8)
+        t1 = datetime.datetime.strftime(now_time, '%Y%m%d%H%M%S')
+        # orderId=userId+"-"+t1
+        orderId=t1
+        o=Order.createOrder(userId,orderId,payway,False,'','')
+        o.save()
+        c=Cart.objects.filter(userAccount=userId,isChose=True,isDelete=False,productnum__gt=0)
+        for item in c:
+            item.orderid=orderId
+            item.save()
+        return JsonResponse({"data":orderId,"status":"success"})
 
 
 
